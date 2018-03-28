@@ -3,7 +3,8 @@ var minRadius = 1
 var randomRadiusVal = 20
 var windowSize
 var touchRadius
-var touchRadiusRate = 12
+var touchRadiusRate = 10
+var ballsRate = 20
 var held;
 var time
 
@@ -14,7 +15,6 @@ var arcArray = []
 var heldArcs = []
 var mouseFollow = []
 var shapesArray = []
-var shapes = ["triangle", "circle", "square", "pentagon", "esagon"]
 
 var colorArray = [    // rgb values
   [1, 22, 39],
@@ -40,14 +40,18 @@ function init() {
 
   //create circles
   touchRadius = Math.round(windowSize / touchRadiusRate);
-  // let ballsNumber = Math.round(windowSize/30)
   circleArray = []
-  let ballsNumber = 20;
+  let ballsNumber = Math.round(windowSize/ballsRate)
+  // let ballsNumber = 20;
   for (let i = 0; i < ballsNumber; i++) {
     var x = Math.random() * (windowWidth - radius * 2) + radius
     var y = Math.random() * (windowHeight - radius * 2) + radius
-    var xVelocity = (Math.random() - 0.5) * 3
-    var yVelocity = (Math.random() - 0.5) * 3
+    // var xVelocity = (Math.random() - 0.5) * 3
+    // var yVelocity = (Math.random() - 0.5) * 3
+
+    var xVelocity = (3 * Math.random() - 1.5) / 5
+    var yVelocity = (3 * Math.random() - 1.5) / 5
+
     var radius = maxRadius;
     var color = getRandomColor(colorArray);
     circleArray.push(new Circle(x, y, xVelocity, yVelocity, radius, color))
@@ -69,7 +73,7 @@ function setup() {
 }
 
 function draw() {
-  background(255)
+  background(255);
 
   circleArray.forEach((circle) => {
     circle.update(circleArray)
@@ -102,9 +106,20 @@ function mouseClicked() {
   // // shapesArray needs to work on the same way that toneArray does. Split in 16 blocks, time value will be rounded up
   // // and innest where to put the triangles in the array. Check triggerNote() in synths.js for constructing a similar algorithm.
 
-  let size = windowSize / 12
+  let size = (windowSize / 13)
+  let sizeRate = 1.5
+  let height = getRandomInt(size - sizeRate, size + sizeRate)
 
-  shapesArray.splice(timeTrack, 1, new Triangle(x, y, size, 0, 0, 1, time))
+  let side = 40
+
+  let shapes = [
+    new Triangle(x, y, height, 0, 1, time), 
+    new Square(x, y, height, 0, 1, time),
+    new Circle(x, y, 0, 0, side, 1, time, true)
+  ]
+  
+  let randomShape = shapes[getRandomInt(0, shapes.length)]
+  shapesArray.splice(timeTrack, 1, randomShape)
 
   // // Randomize shapes
   // var randomShape = getRandomInt(0, shapes.length)
@@ -153,6 +168,11 @@ function mouseReleased() {
 //   }
 
 // }
+
+
+
+
+// Other Functions
 
 function playNote() {
   let note = Math.floor(notesArray.length / windowWidth * mouseX)
@@ -236,7 +256,10 @@ function distance(x1, y1, x2, y2) {
 }
 
 function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
+  resizeCanvas(windowWidth, windowHeight)
+
+  let oldWindowSize = windowSize
+
   getWindowSize()
   init()
 }
