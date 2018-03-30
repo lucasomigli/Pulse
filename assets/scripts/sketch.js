@@ -10,19 +10,43 @@ var time
 
 var mouseHeld
 
-var circleArray = []
+var ballsArray = []
 var arcArray = []
 var heldArcs = []
 var mouseFollow = []
 var shapesArray = []
 
-var colorArray = [    // rgb values
-  [1, 22, 39],
-  [255, 255, 255,],
+var colorPalette = [    // rgb values
+  [[1, 22, 39],
+  [255, 255, 255],
   [46, 196, 182],
   [231, 29, 54],
-  [255, 159, 28],
-]
+  [255, 159, 28]],
+
+  [[43, 45, 66],
+  [141, 153, 174],
+  [237, 242, 244],
+  [239, 35, 60],
+  [217, 4, 41]],
+
+  [[198, 78, 63],
+  [170, 42, 76],
+  [139, 19, 86],
+  [71, 26, 100],
+  [344, 91, 100]],
+
+  [[90, 2, 32],
+  [1, 62, 95],
+  [48, 60, 100],
+  [198, 78, 63],
+  [170, 42, 76]],
+
+  [[0, 0, 100],
+  [195, 100, 12],
+  [205, 100, 35],
+  [195, 100, 65],
+  [197, 100, 91]]
+  ]
 
 var notesArray = [
   "C3",
@@ -38,9 +62,9 @@ var notesArray = [
 function init() {
   getWindowSize()
 
-  //create circles
+  //create balls
   touchRadius = Math.round(windowSize / touchRadiusRate);
-  circleArray = []
+  ballsArray = []
   let ballsNumber = Math.round(windowSize/ballsRate)
   // let ballsNumber = 20;
   for (let i = 0; i < ballsNumber; i++) {
@@ -54,10 +78,10 @@ function init() {
 
     var radius = maxRadius;
     var color = getRandomColor(colorArray);
-    circleArray.push(new Circle(x, y, xVelocity, yVelocity, radius, color))
-    circleArray[i].position = i
-    circleArray[0].x = x
-    circleArray[0].y = y
+    ballsArray.push(new Ball(x, y, xVelocity, yVelocity, radius, color))
+    ballsArray[i].position = i
+    ballsArray[0].x = x
+    ballsArray[0].y = y
   }
 }
 
@@ -66,6 +90,7 @@ function init() {
 function setup() {
   createCanvas(windowWidth, windowHeight)
   colorMode(RGB);
+  colorArray = colorPalette[getRandomInt(0, colorPalette.length)]
   init()
   for (let i = 0; i < 16; i++) {
     shapesArray.push(new Shape())
@@ -75,8 +100,8 @@ function setup() {
 function draw() {
   background(255);
 
-  circleArray.forEach((circle) => {
-    circle.update(circleArray)
+  ballsArray.forEach((ball) => {
+    ball.update(ballsArray)
   })
 
   shapesArray.forEach((shape) => {
@@ -107,14 +132,14 @@ function mouseClicked() {
   // // and innest where to put the triangles in the array. Check triggerNote() in synths.js for constructing a similar algorithm.
 
   let size = (windowSize / 13)
-  let sizeRate = 1.5
+  let sizeRate = 1.2
   let radius = getRandomInt(size - sizeRate, size + sizeRate)
 
   let shapes = [
-    new Triangle(x, y, radius, 0, 1, time), 
-    new Square(x, y, radius, 0, 1, time),
-    new Circle(x, y, 0, 0, radius, 1, time, true),
-    new Pentagon(x, y, radius,  0, 5, 1, time)
+    new Triangle(x, y, radius, 1, time), 
+    new Square(x, y, radius, 1, time),
+    new Circle(x, y, radius, 1, time),
+    new Pentagon(x, y, radius, 5, 1, time)
   ]
   
   let randomShape = shapes[getRandomInt(0, shapes.length)]
@@ -200,27 +225,27 @@ function updateArcs() {
 }
 
 function changeDirectionOnMouseClick(xPos, yPos) {
-  for (let i = 0; i < circleArray.length; i++) {
-    if (xPos - circleArray[i].x < touchRadius && xPos - circleArray[i].x > -touchRadius &&
-      yPos - circleArray[i].y < touchRadius && yPos - circleArray[i].y > -touchRadius
+  for (let i = 0; i < ballsArray.length; i++) {
+    if (xPos - ballsArray[i].x < touchRadius && xPos - ballsArray[i].x > -touchRadius &&
+      yPos - ballsArray[i].y < touchRadius && yPos - ballsArray[i].y > -touchRadius
     ) {
-      var newDx = Math.random(Math.sqrt(xPos - circleArray[i].xVelocity)) * 3
-      var newDy = Math.random(Math.sqrt(yPos - circleArray[i].yVelocity)) * 3
-      if (circleArray[i].x > xPos) {
-        if (circleArray[i].y > yPos) {
-          circleArray[i].xVelocity = Math.abs(newDx)
-          circleArray[i].yVelocity = Math.abs(newDy)
+      var newDx = Math.random(Math.sqrt(xPos - ballsArray[i].xVelocity)) * 3
+      var newDy = Math.random(Math.sqrt(yPos - ballsArray[i].yVelocity)) * 3
+      if (ballsArray[i].x > xPos) {
+        if (ballsArray[i].y > yPos) {
+          ballsArray[i].xVelocity = Math.abs(newDx)
+          ballsArray[i].yVelocity = Math.abs(newDy)
         } else {
-          circleArray[i].xVelocity = Math.abs(newDx)
-          circleArray[i].yVelocity = -Math.abs(newDy)
+          ballsArray[i].xVelocity = Math.abs(newDx)
+          ballsArray[i].yVelocity = -Math.abs(newDy)
         }
       } else {
-        if (circleArray[i].y > yPos) {
-          circleArray[i].xVelocity = -Math.abs(newDx)
-          circleArray[i].yVelocity = Math.abs(newDy)
+        if (ballsArray[i].y > yPos) {
+          ballsArray[i].xVelocity = -Math.abs(newDx)
+          ballsArray[i].yVelocity = Math.abs(newDy)
         } else {
-          circleArray[i].xVelocity = -Math.abs(newDx)
-          circleArray[i].yVelocity = -Math.abs(newDy)
+          ballsArray[i].xVelocity = -Math.abs(newDx)
+          ballsArray[i].yVelocity = -Math.abs(newDy)
         }
       }
     }

@@ -1,7 +1,7 @@
-// Circle Class
+// Balls Class
 
-class Circle {
-    constructor(x, y, xVelocity, yVelocity, radius, color, time, isShape = false) {
+class Ball {
+    constructor(x, y, xVelocity, yVelocity, radius, color, time) {
         this.x = x
         this.y = y
         this.xVelocity = xVelocity
@@ -16,19 +16,13 @@ class Circle {
         this.origOpacity = this.opacity
         this.strokeColor = 1
         this.time = time
-        this.isShape = isShape
         this.fxBool = false
     }
 
     draw() {
         if (this.color != null) {
-            if (this.isShape) {
-                fill(1)
-                noStroke()
-            } else {
-                fill(this.color)
-                stroke(this.strokeColor)
-            }
+            fill(this.color)
+            stroke(this.strokeColor)
         }
         ellipse(this.x, this.y, this.radius, this.radius)
     }
@@ -36,7 +30,6 @@ class Circle {
     update(circles) {
         // Bouncing off the sides of widow
         let tempRadius
-        if (!this.isShape) {
             if (this.y + minRadius > windowHeight ||
                 this.y - minRadius < 0) {
                 this.yVelocity = -this.yVelocity
@@ -54,13 +47,8 @@ class Circle {
 
             // mouse interactivity
             this.mouseInteraction()
-        }
 
         this.draw()
-
-        if (this.isShape) {
-            this.colorFade()
-        }
     }
 
     changeDirectionOnCollision(circles) {
@@ -71,30 +59,6 @@ class Circle {
                 // resolveCollision(this, circles[i])
             }
         }
-    }
-
-    colorFade() {
-        var timeTrigger = Math.round((this.time % barTimeLength) * 10) / 10
-        var currentTime = Math.round((Tone.now() % barTimeLength) * 10) / 10
-        var changeRate = 0.5
-        var fadeRate = 8
-        if (currentTime !== timeTrigger) {
-            this.color += fadeRate/this.origColor * changeRate
-            this.opacity -= fadeRate/this.origColor * changeRate * 2
-            this.fxBool = true
-        } else {
-            this.color = this.origColor
-            this.opacity = this.origOpacity
-            this.clickFX()
-        }
-    }
-
-    clickFX() {
-        if (this.fxBool) {
-            generateArcs(this.x, this.y)
-            this.fxBool = false
-        }
-        changeDirectionOnMouseClick(this.x, this.y)
     }
 
     mouseInteraction() {

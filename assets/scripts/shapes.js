@@ -1,44 +1,90 @@
+// Need to add rotation to the shapes classes
+
 // Shape Class
 
 class Shape {
-    constructor(x, y, color) {
+    constructor(x, y, size, color, time) {
         this.x = x
         this.y = y
-        this.color = color
-    }
-
-    draw() {}
-    update() {this.draw()}
-
-    colorFade() {}
-
-    updateSize() {}
-}
-
-// Triangle Class
-
-class Triangle {
-    constructor(x, y, height, rotation, color, time) {
-        this.x = x
-        this.y = y
-        this.height = height
-        this.rotation = rotation
+        this.size = size
         this.color = color
         this.origColor = color
+        this.time = time
         this.opacity = 255
         this.origOpacity = this.opacity
-        this.time = time
-        this.tint = 0
         this.fxBool = false
     }
+    update () {}
+    
+    colorFade() {
+        var timeTrigger = Math.round((this.time % barTimeLength) * 10) / 10
+        var currentTime = Math.round((Tone.now() % barTimeLength) * 10) / 10
+        var changeRate = 0.5
+        var fadeRate = 8
 
+        if (currentTime !== timeTrigger) {
+            this.color += fadeRate/this.origColor * changeRate
+            this.opacity -= fadeRate/this.origColor * changeRate * 2
+            this.fxBool = true
+        } else {
+            this.color = this.origColor
+            this.opacity = this.origOpacity
+            this.clickFX()
+        }
+    }
+
+    clickFX() {
+        if (this.fxBool) {
+            generateArcs(this.x, this.y)
+            this.fxBool = false
+        }
+        changeDirectionOnMouseClick(this.x, this.y)
+    }
+}
+
+// Circle Class
+
+class Circle extends Shape {
+    constructor(x, y, radius, color, time) {
+        super(x, y, radius, color, time)
+        this.x = x
+        this.y = y
+        this.radius = radius
+        this.color = color
+        this.time = time
+    }
+    
     draw() {
         if (this.color != null) {
             fill(this.color, this.opacity)
             noStroke()
         }
+        ellipse(this.x, this.y, this.radius, this.radius)
+    }
 
-        // add rotation 
+    update() {
+        this.draw()
+        this.colorFade()
+    }
+}
+
+// Triangle Class
+
+class Triangle extends Shape {
+    constructor(x, y, height, color, time) {
+        super(x, y, height, color, time)
+        this.x = x
+        this.y = y
+        this.height = height
+        this.color = color
+        this.time = time
+    }
+
+    draw () {
+        if (this.color != null) {
+            fill(this.color, this.opacity)
+            noStroke()
+        }
 
         let side = (tan(45) * this.height / 2)
         let x1 = this.x - side / 2
@@ -51,53 +97,21 @@ class Triangle {
     }
 
     update() {
-        // add tilt
-
         this.draw()
-
         this.colorFade()
-    }
-
-    colorFade() {
-        var timeTrigger = Math.round((this.time % barTimeLength) * 10) / 10
-        var currentTime = Math.round((Tone.now() % barTimeLength) * 10) / 10
-        var changeRate = 0.5
-        var fadeRate = 8
-        if (currentTime !== timeTrigger) {
-            this.color += fadeRate/this.origColor * changeRate
-            this.opacity -= fadeRate/this.origColor * changeRate * 2
-            this.fxBool = true
-        } else {
-            this.color = this.origColor
-            this.opacity = this.origOpacity
-            this.clickFX()
-        }
-    }
-
-    clickFX() {
-        if (this.fxBool) {
-            generateArcs(this.x, this.y)
-            this.fxBool = false
-        }
-        changeDirectionOnMouseClick(this.x, this.y)
     }
 }
 
 // Square Class
 
-class Square {
-    constructor(x, y, size, rotation, color, time) {
+class Square extends Shape {
+    constructor(x, y, size, color, time) {
+        super(x, y, size, color, time)
         this.x = x
         this.y = y
         this.size = size / 1.4
-        this.rotation = rotation
         this.color = color
-        this.origColor = color
-        this.opacity = 255
-        this.origOpacity = this.opacity
         this.time = time
-        this.tint = 0
-        this.fxBool = false
     }
 
     draw() {
@@ -105,63 +119,27 @@ class Square {
             fill(this.color, this.opacity)
             noStroke()
         }
-
-        // add rotation 
-
         rect(this.x - this.size/2, this.y - this.size/2, this.size, this.size)
     }
 
     update() {
-        // add tilt
-
         this.draw()
-
         this.colorFade()
-    }
-
-    colorFade() {
-        var timeTrigger = Math.round((this.time % barTimeLength) * 10) / 10
-        var currentTime = Math.round((Tone.now() % barTimeLength) * 10) / 10
-        var changeRate = 0.5
-        var fadeRate = 8
-        if (currentTime !== timeTrigger) {
-            this.color += fadeRate/this.origColor * changeRate
-            this.opacity -= fadeRate/this.origColor * changeRate * 2
-            this.fxBool = true
-        } else {
-            this.color = this.origColor
-            this.opacity = this.origOpacity
-            this.clickFX()
-        }
-    }
-
-    clickFX() {
-        if (this.fxBool) {
-            generateArcs(this.x, this.y)
-            
-            this.fxBool = false
-        }
-        changeDirectionOnMouseClick(this.x, this.y)
     }
 }
 
 // Pentagon Class
 
-class Pentagon {
-    constructor(x, y, radius, rotation, nSides, color, time) {
+class Pentagon extends Shape {
+    constructor(x, y, radius, nSides, color, time) {
+        super(x, y, radius, color, time)
         this.x = x
         this.y = y
         this.radius = radius / 1.4
-        this.rotation = rotation
         this.nSides = nSides
         this.angle = Math.PI*2 / this.nSides
         this.color = color
-        this.origColor = color
-        this.opacity = 255
-        this.origOpacity = this.opacity
         this.time = time
-        this.tint = 0
-        this.fxBool = false
     }
 
     draw() {
@@ -169,8 +147,6 @@ class Pentagon {
             fill(this.color, this.opacity)
             noStroke()
         }
-
-        // add rotation 
 
         beginShape()
         for (let a = 0; a < Math.PI*2; a += this.angle) {
@@ -182,35 +158,8 @@ class Pentagon {
     }
 
     update() {
-        // add tilt
-
         this.draw()
-
         this.colorFade()
-    }
-
-    colorFade() {
-        var timeTrigger = Math.round((this.time % barTimeLength) * 10) / 10
-        var currentTime = Math.round((Tone.now() % barTimeLength) * 10) / 10
-        var changeRate = 0.5
-        var fadeRate = 8
-        if (currentTime !== timeTrigger) {
-            this.color += fadeRate/this.origColor * changeRate
-            this.opacity -= fadeRate/this.origColor * changeRate * 2
-            this.fxBool = true
-        } else {
-            this.color = this.origColor
-            this.opacity = this.origOpacity
-            this.clickFX()
-        }
-    }
-
-    clickFX() {
-        if (this.fxBool) {
-            generateArcs(this.x, this.y)
-            this.fxBool = false
-        }
-        changeDirectionOnMouseClick(this.x, this.y)
     }
 }
 
