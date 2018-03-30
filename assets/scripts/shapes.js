@@ -89,7 +89,7 @@ class Square {
     constructor(x, y, size, rotation, color, time) {
         this.x = x
         this.y = y
-        this.size = size
+        this.size = size / 1.4
         this.rotation = rotation
         this.color = color
         this.origColor = color
@@ -139,6 +139,75 @@ class Square {
         if (this.fxBool) {
             generateArcs(this.x, this.y)
             
+            this.fxBool = false
+        }
+        changeDirectionOnMouseClick(this.x, this.y)
+    }
+}
+
+// Pentagon Class
+
+class Pentagon {
+    constructor(x, y, radius, rotation, nSides, color, time) {
+        this.x = x
+        this.y = y
+        this.radius = radius / 1.4
+        this.rotation = rotation
+        this.nSides = nSides
+        this.angle = Math.PI*2 / this.nSides
+        this.color = color
+        this.origColor = color
+        this.opacity = 255
+        this.origOpacity = this.opacity
+        this.time = time
+        this.tint = 0
+        this.fxBool = false
+    }
+
+    draw() {
+        if (this.color != null) {
+            fill(this.color, this.opacity)
+            noStroke()
+        }
+
+        // add rotation 
+
+        beginShape()
+        for (let a = 0; a < Math.PI*2; a += this.angle) {
+        var sx = this.x + cos(a) * this.radius;
+        var sy = this.y + sin(a) * this.radius;
+        vertex(sx, sy);
+        }
+        endShape(CLOSE);
+    }
+
+    update() {
+        // add tilt
+
+        this.draw()
+
+        this.colorFade()
+    }
+
+    colorFade() {
+        var timeTrigger = Math.round((this.time % barTimeLength) * 10) / 10
+        var currentTime = Math.round((Tone.now() % barTimeLength) * 10) / 10
+        var changeRate = 0.5
+        var fadeRate = 8
+        if (currentTime !== timeTrigger) {
+            this.color += fadeRate/this.origColor * changeRate
+            this.opacity -= fadeRate/this.origColor * changeRate * 2
+            this.fxBool = true
+        } else {
+            this.color = this.origColor
+            this.opacity = this.origOpacity
+            this.clickFX()
+        }
+    }
+
+    clickFX() {
+        if (this.fxBool) {
+            generateArcs(this.x, this.y)
             this.fxBool = false
         }
         changeDirectionOnMouseClick(this.x, this.y)

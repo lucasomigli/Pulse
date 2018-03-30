@@ -108,14 +108,13 @@ function mouseClicked() {
 
   let size = (windowSize / 13)
   let sizeRate = 1.5
-  let height = getRandomInt(size - sizeRate, size + sizeRate)
-
-  let side = 40
+  let radius = getRandomInt(size - sizeRate, size + sizeRate)
 
   let shapes = [
-    new Triangle(x, y, height, 0, 1, time), 
-    new Square(x, y, height, 0, 1, time),
-    new Circle(x, y, 0, 0, side, 1, time, true)
+    new Triangle(x, y, radius, 0, 1, time), 
+    new Square(x, y, radius, 0, 1, time),
+    new Circle(x, y, 0, 0, radius, 1, time, true),
+    new Pentagon(x, y, radius,  0, 5, 1, time)
   ]
   
   let randomShape = shapes[getRandomInt(0, shapes.length)]
