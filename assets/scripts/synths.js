@@ -24,12 +24,27 @@ env.connect(gainNode.gain)
 
 // Instruments 
 
-var osc = new Tone.Oscillator({
-    "frequency": 440,
-    "volume": -10,
-    "type": "square"
-}).connect(filter)
-osc.hold = false
+var synth1 = new Tone.AMSynth({
+	"modulationIndex": "modind",
+	"oscillator": {
+		"type": "sine"
+	},
+	"envelope": {
+		"attack": 0.01,
+		"decay": 0.2
+	},
+	"modulation": {
+		"type": "sine",
+		"frequency": 440,
+		"detune": 0,
+		"phase": 0
+	},
+	"modulationEnvelope" : {
+		"attack": 0.2,
+		"decay": 0.01
+	}
+}).toMaster();
+
 
 var synth = new Tone.MonoSynth({
     "oscillator": {
@@ -69,6 +84,7 @@ var seq = new Tone.Sequence(function (time, note) {
     ["C11", "C11", "C11", "C11"],
     ["C11", "C11", "C11", "C11"]
 ], "4n")
+
 
 Tone.Transport.start()
 seq.start()

@@ -16,7 +16,7 @@ var heldArcs = []
 var mouseFollow = []
 var shapesArray = []
 
-var colorPalette = [    // rgb values
+var colorPalette = [
   [[1, 22, 39],
   [255, 255, 255],
   [46, 196, 182],
@@ -66,16 +66,11 @@ function init() {
   touchRadius = Math.round(windowSize / touchRadiusRate);
   ballsArray = []
   let ballsNumber = Math.round(windowSize/ballsRate)
-  // let ballsNumber = 20;
   for (let i = 0; i < ballsNumber; i++) {
     var x = Math.random() * (windowWidth - radius * 2) + radius
     var y = Math.random() * (windowHeight - radius * 2) + radius
-    // var xVelocity = (Math.random() - 0.5) * 3
-    // var yVelocity = (Math.random() - 0.5) * 3
-
     var xVelocity = (3 * Math.random() - 1.5) / 5
     var yVelocity = (3 * Math.random() - 1.5) / 5
-
     var radius = maxRadius;
     var color = getRandomColor(colorArray);
     ballsArray.push(new Ball(x, y, xVelocity, yVelocity, radius, color))
@@ -115,26 +110,20 @@ function draw() {
   }
 
   if (mouseHeld === false) {
-    osc.mute = true
-    osc.hold = false
+    synth1.mute = true
+    synth1.hold = false
   }
 
 }
 
 function mouseClicked() {
-  time = Tone.now()
   let x = mouseX
   let y = mouseY
 
+  time = Tone.now()
   playNote(time)
 
-  // // shapesArray needs to work on the same way that toneArray does. Split in 16 blocks, time value will be rounded up
-  // // and innest where to put the triangles in the array. Check triggerNote() in synths.js for constructing a similar algorithm.
-
-  let size = (windowSize / 13)
-  let sizeRate = 1.2
-  let radius = getRandomInt(size - sizeRate, size + sizeRate)
-
+  let radius = setSize()
   let shapes = [
     new Triangle(x, y, radius, 1, time), 
     new Square(x, y, radius, 1, time),
@@ -144,28 +133,6 @@ function mouseClicked() {
   
   let randomShape = shapes[getRandomInt(0, shapes.length)]
   shapesArray.splice(timeTrack, 1, randomShape)
-
-  // // Randomize shapes
-  // var randomShape = getRandomInt(0, shapes.length)
-
-  // switch (randomShape) {
-  //   case "triangle":
-  //   shapesArray.push(new Triangle())
-  //     break;
-  //   case "triangle": 
-  //   shapesArray.push(new Triangle())
-  //   break;
-  //   case "triangle": 
-  //   shapesArray.push(new Triangle())
-  //   break;
-  //   case "triangle": 
-  //   shapesArray.push(new Triangle())
-  //   break;
-
-  //   default: "triangle"
-  //     break;
-  // }
-
 }
 
 function mouseReleased() {
@@ -179,22 +146,19 @@ function mouseReleased() {
   mouseHeld = false
 }
 
-// function mouseDragged() {
+function mouseDragged() {
+  mouseHeld = true
 
-//   mouseHeld = true
+  // synth.modulation.frequency.value = 3000/windowWidth * mouseX
+  // console.log("hellos")
 
-//   osc.frequency.value = 3000/windowWidth * mouseX
+  if (synth1.hold === false) {
+    synth1.mute = false
+    // vol.volume.value++
+    synth1.hold = true
+  }
 
-//   if (osc.hold === false) {
-//     osc.mute = false
-//     osc.start();
-//     osc.hold = true
-//   }
-
-// }
-
-
-
+}
 
 // Other Functions
 
@@ -263,6 +227,12 @@ function rotate(velocity, angle) {
   return rotatedVelocities;
 }
 
+function setSize () {
+  let normalise = (windowSize / 13)
+  let sizeRate = 1.2
+  return getRandomInt(normalise - sizeRate, normalise + sizeRate)
+}
+
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * Math.floor(max)) + min;
 }
@@ -282,9 +252,12 @@ function distance(x1, y1, x2, y2) {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight)
 
-  let oldWindowSize = windowSize
-
   getWindowSize()
+  shapesArray.forEach(shape => {
+    shape.size = setSize()
+    shape.radius = setSize()
+    shape.height = setSize()
+  })
   init()
 }
 
