@@ -12,6 +12,7 @@ var currentTime
 var mouseHeld
 
 var bgColorArray = []
+var backgroundColor
 
 var ballsArray = []
 var arcArray = []
@@ -90,10 +91,8 @@ function setup() {
   colorMode(RGB);
   colorArray = colorPalette[getRandomInt(0, colorPalette.length)]
   init()
-  for (let i = 0; i < 3; i++) {
-    let randomVal = getRandomInt(0, 255)
-    bgColorArray.push(randomVal)
-  } 
+
+  backgroundColor = new Color(getRandomInt(0, 255), getRandomInt(0, 255), getRandomInt(0, 255))
 
   for (let i = 0; i < 16; i++) {
     shapesArray.push(new Shape())
@@ -101,8 +100,8 @@ function setup() {
 }
 
 function draw() {
-  updateBackground(bgColorArray, getRandomInt(10, 80), getRandomInt(180, 240), 0.5)
-  background(bgColorArray)
+  updateBackground(getRandomInt(10, 80), getRandomInt(180, 240), 0.5)
+  background(backgroundColor.rgb)
 
   ballsArray.forEach((ball) => {
     ball.update(ballsArray)
@@ -226,29 +225,26 @@ function changeDirectionOnMouseClick(xPos, yPos) {
 }
 
 var previousCol = []
+var speedvals = []
 
-function updateBackground(array, minCol, maxCol, speed) {
-  let colA = array[0]
-  let colB = array[1]
-  let colC = array[2]
-
-  for (let i = 0; i < array.length; i++) {
-    if (array[i].speed === undefined) {
-      array[i].speed = Math.random() * speed
+function updateBackground(minCol, maxCol, speed) {
+  for (let i = 0; i < 3; i++) {
+    if (!speedvals[i]) {
+      speedvals[i] = Math.random() * speed + .1
     }
-    if (previousCol[i] === undefined || previousCol[i] === undefined || previousCol[i] === undefined) {
-      previousCol[i] = array[i] - speed; previousCol[i] = array[i] - speed; previousCol[i] = array[i] - speed;
+    if (previousCol[i] === undefined) {
+      previousCol.push(backgroundColor.rgb[i] - speedvals[i])
     }
-    if (previousCol[i] < array[i] && array[i] <= maxCol) {
-      previousCol[i] = array[i]
-      array[i] += speed
-    } else if (array[i] > maxCol || previousCol[i] > array[i]) {
-      if (array[i] < minCol) {
-        previousCol[i] = array[i]
-        array[i] += speed
+    if (previousCol[i] < backgroundColor.rgb[i] && backgroundColor.rgb[i] <= maxCol) {
+      previousCol[i] = backgroundColor.rgb[i]
+      backgroundColor.rgb[i] += speedvals[i]
+    } else if (backgroundColor.rgb[i] > maxCol || previousCol[i] > backgroundColor.rgb[i]) {
+      if (backgroundColor.rgb[i] < minCol) {
+        previousCol[i] = backgroundColor.rgb[i]
+        backgroundColor.rgb[i] += speedvals[i]
       } else {
-        previousCol[i] = array[i]
-        array[i] -= speed
+        previousCol[i] = backgroundColor.rgb[i]
+        backgroundColor.rgb[i] -= speedvals[i]
       }
     }
   }
@@ -260,7 +256,7 @@ function rotate(velocity, angle) {
   const rotatedVelocities = {
     x: velocity.x * Math.cos(angle) - velocity.y * Math.sin(angle),
     y: velocity.x * Math.sin(angle) + velocity.y * Math.cos(angle)
-  };
+  }
 
   return rotatedVelocities;
 }
