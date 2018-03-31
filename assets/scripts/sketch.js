@@ -7,8 +7,11 @@ var touchRadiusRate = 10
 var ballsRate = 20
 var held;
 var time
+var currentTime
 
 var mouseHeld
+
+var bgColorArray = []
 
 var ballsArray = []
 var arcArray = []
@@ -87,13 +90,19 @@ function setup() {
   colorMode(RGB);
   colorArray = colorPalette[getRandomInt(0, colorPalette.length)]
   init()
+  for (let i = 0; i < 3; i++) {
+    let randomVal = getRandomInt(0, 255)
+    bgColorArray.push(randomVal)
+  } 
+
   for (let i = 0; i < 16; i++) {
     shapesArray.push(new Shape())
   }
 }
 
 function draw() {
-  background(255);
+  updateBackground(bgColorArray, getRandomInt(10, 80), getRandomInt(180, 240), 0.5)
+  background(bgColorArray)
 
   ballsArray.forEach((ball) => {
     ball.update(ballsArray)
@@ -211,6 +220,35 @@ function changeDirectionOnMouseClick(xPos, yPos) {
           ballsArray[i].xVelocity = -Math.abs(newDx)
           ballsArray[i].yVelocity = -Math.abs(newDy)
         }
+      }
+    }
+  }
+}
+
+var previousCol = []
+
+function updateBackground(array, minCol, maxCol, speed) {
+  let colA = array[0]
+  let colB = array[1]
+  let colC = array[2]
+
+  for (let i = 0; i < array.length; i++) {
+    if (array[i].speed === undefined) {
+      array[i].speed = Math.random() * speed
+    }
+    if (previousCol[i] === undefined || previousCol[i] === undefined || previousCol[i] === undefined) {
+      previousCol[i] = array[i] - speed; previousCol[i] = array[i] - speed; previousCol[i] = array[i] - speed;
+    }
+    if (previousCol[i] < array[i] && array[i] <= maxCol) {
+      previousCol[i] = array[i]
+      array[i] += speed
+    } else if (array[i] > maxCol || previousCol[i] > array[i]) {
+      if (array[i] < minCol) {
+        previousCol[i] = array[i]
+        array[i] += speed
+      } else {
+        previousCol[i] = array[i]
+        array[i] -= speed
       }
     }
   }
