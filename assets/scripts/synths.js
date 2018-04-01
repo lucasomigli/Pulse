@@ -24,6 +24,11 @@ env.connect(gainNode.gain)
 
 // Instruments 
 
+var kick = new Tone.Player({
+    "url" : "./assets/sounds/kick.mp3",
+    "loop" : false
+}).toMaster();
+
 var synth1 = new Tone.AMSynth({
 	"modulationIndex": "modind",
 	"oscillator": {
@@ -85,9 +90,20 @@ var seq = new Tone.Sequence(function (time, note) {
     ["C11", "C11", "C11", "C11"]
 ], "4n")
 
+var kickSeq = new Tone.Sequence(function (time, note) {
+    kick.start(Tone.now() + 0.5)
+}, [
+    "C1",
+    "C1",
+    "C1",
+    "C1"
+], "4n")
+
 
 Tone.Transport.start()
 seq.start()
+kickSeq.start()
+kickSeq.mute = true
 
 function triggerNote(tone, time) {
     timeTrack = Math.floor(time % barTimeLength * barSubdivision / barTimeLength)

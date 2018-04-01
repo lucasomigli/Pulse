@@ -94,13 +94,15 @@ function setup() {
 
   backgroundColor = new Color(getRandomInt(0, 255), getRandomInt(0, 255), getRandomInt(0, 255))
 
+  kickSeq.mute = true
+
   for (let i = 0; i < 16; i++) {
     shapesArray.push(new Shape())
   }
 }
 
 function draw() {
-  updateBackground(getRandomInt(10, 80), getRandomInt(180, 240), 0.5)
+  updateBackground(getRandomInt(90, 100), getRandomInt(180, 240), .1)
   background(backgroundColor.rgb)
 
   ballsArray.forEach((ball) => {
@@ -121,7 +123,6 @@ function draw() {
     synth1.mute = true
     synth1.hold = false
   }
-
 }
 
 function mouseClicked() {
@@ -129,6 +130,7 @@ function mouseClicked() {
   let y = mouseY
 
   time = Tone.now()
+  
   playNote(time)
 
   let radius = setSize()
@@ -144,21 +146,22 @@ function mouseClicked() {
 }
 
 function mouseReleased() {
-  let x = mouseX
-  let y = mouseY
 
-  changeDirectionOnMouseClick(x, y);
+  changeDirectionOnMouseClick(mouseX, mouseY);
 
   generateArcs(mouseX, mouseY)
+
+  kickSeq.mute = true
 
   mouseHeld = false
 }
 
 function mouseDragged() {
   mouseHeld = true
-
   // synth.modulation.frequency.value = 3000/windowWidth * mouseX
   // console.log("hellos")
+
+  kickSeq.mute = false
 
   if (synth1.hold === false) {
     synth1.mute = false
@@ -230,7 +233,7 @@ var speedvals = []
 function updateBackground(minCol, maxCol, speed) {
   for (let i = 0; i < 3; i++) {
     if (!speedvals[i]) {
-      speedvals[i] = Math.random() * speed + .1
+      speedvals[i] = Math.random() * speed + .01
     }
     if (previousCol[i] === undefined) {
       previousCol.push(backgroundColor.rgb[i] - speedvals[i])
