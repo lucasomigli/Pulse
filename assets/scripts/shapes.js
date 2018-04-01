@@ -23,13 +23,17 @@ class Shape {
         var fadeRate = 8
 
         if (currentTime !== timeTrigger) {
-            this.color += fadeRate/this.origColor * changeRate
-            this.opacity -= fadeRate/this.origColor * changeRate * 2
-            this.fxBool = true
+            for (let i = 0; i < this.color.length; i++) {
+                this.color[i] += fadeRate * changeRate
+                this.opacity -= fadeRate * changeRate * 2
+                this.fxBool = true
+            }
         } else {
-            this.color = this.origColor
-            this.opacity = this.origOpacity
-            this.clickFX()
+            for (let i = 0; i < this.color.length; i++) {
+                this.color[i] = this.origColor[i]
+                this.opacity = this.origOpacity
+                this.clickFX()
+            }
         }
     }
 

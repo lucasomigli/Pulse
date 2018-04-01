@@ -134,11 +134,12 @@ function mouseClicked() {
   playNote(time)
 
   let radius = setSize()
+  let col = new Color(50, 100, 150)
   let shapes = [
-    new Triangle(x, y, radius, 1, time), 
-    new Square(x, y, radius, 1, time),
-    new Circle(x, y, radius, 1, time),
-    new Pentagon(x, y, radius, 5, 1, time)
+    new Triangle(x, y, radius, col.rgb, time), 
+    new Square(x, y, radius, col.rgb, time),
+    new Circle(x, y, radius, col.rgb, time),
+    new Pentagon(x, y, radius, 5, col.rgb, time)
   ]
   
   let randomShape = shapes[getRandomInt(0, shapes.length)]
