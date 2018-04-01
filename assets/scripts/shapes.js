@@ -8,13 +8,18 @@ class Shape {
         this.y = y
         this.size = size
         this.color = color
-        this.origColor = color
+        this.originalColor = []
         this.time = time
         this.opacity = 255
         this.origOpacity = this.opacity
         this.fxBool = false
     }
+
     update () {}
+
+    setOriginalColor ([val1, val2, val3]){
+        this.originalColor = [val1, val2, val3]
+    }
     
     colorFade() {
         var timeTrigger = Math.round((this.time % barTimeLength) * 10) / 10
@@ -25,15 +30,15 @@ class Shape {
         if (currentTime !== timeTrigger) {
             for (let i = 0; i < this.color.length; i++) {
                 this.color[i] += fadeRate * changeRate
-                this.opacity -= fadeRate * changeRate * 2
-                this.fxBool = true
             }
+            this.opacity -= fadeRate * changeRate * 2
+            this.fxBool = true
         } else {
             for (let i = 0; i < this.color.length; i++) {
-                this.color[i] = this.origColor[i]
-                this.opacity = this.origOpacity
-                this.clickFX()
+                this.color[i] = this.originalColor[i]
             }
+            this.opacity = this.origOpacity
+            this.clickFX()
         }
     }
 
@@ -60,7 +65,7 @@ class Circle extends Shape {
     
     draw() {
         if (this.color != null) {
-            fill(this.color, this.opacity)
+            fill(this.color[0], this.color[1], this.color[2], this.opacity)
             noStroke()
         }
         ellipse(this.x, this.y, this.radius, this.radius)
@@ -86,7 +91,7 @@ class Triangle extends Shape {
 
     draw () {
         if (this.color != null) {
-            fill(this.color, this.opacity)
+            fill(this.color[0], this.color[1], this.color[2], this.opacity)
             noStroke()
         }
 
@@ -120,7 +125,7 @@ class Square extends Shape {
 
     draw() {
         if (this.color != null) {
-            fill(this.color, this.opacity)
+            fill(this.color[0], this.color[1], this.color[2], this.opacity)
             noStroke()
         }
         rect(this.x - this.size/2, this.y - this.size/2, this.size, this.size)
@@ -148,7 +153,7 @@ class Pentagon extends Shape {
 
     draw() {
         if (this.color != null) {
-            fill(this.color, this.opacity)
+            fill(this.color[0], this.color[1], this.color[2], this.opacity)
             noStroke()
         }
 

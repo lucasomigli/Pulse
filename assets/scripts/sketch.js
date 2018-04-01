@@ -76,7 +76,7 @@ function init() {
     var xVelocity = (3 * Math.random() - 1.5) / 5
     var yVelocity = (3 * Math.random() - 1.5) / 5
     var radius = maxRadius;
-    var color = getRandomColor(colorArray);
+    var color = getRandomColor(colorArray)
     ballsArray.push(new Ball(x, y, xVelocity, yVelocity, radius, color))
     ballsArray[i].position = i
     ballsArray[0].x = x
@@ -134,7 +134,8 @@ function mouseClicked() {
   playNote(time)
 
   let radius = setSize()
-  let col = new Color(50, 100, 150)
+  let ranColArray = getRandomColor(colorPalette, true)
+  let col = new Color(ranColArray[0], ranColArray[1], ranColArray[2])
   let shapes = [
     new Triangle(x, y, radius, col.rgb, time), 
     new Square(x, y, radius, col.rgb, time),
@@ -144,6 +145,7 @@ function mouseClicked() {
   
   let randomShape = shapes[getRandomInt(0, shapes.length)]
   shapesArray.splice(timeTrack, 1, randomShape)
+  shapesArray[timeTrack].setOriginalColor(col.rgb)
 }
 
 function mouseReleased() {
@@ -275,9 +277,14 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * Math.floor(max)) + min;
 }
 
-function getRandomColor(array) {
-  let i = Math.round(Math.random() * array.length);
-  return array[i];
+function getRandomColor(array, pos) {
+  let val = getRandomInt(0, array.length)
+  if (pos) {
+    pos = getRandomInt(0, array[val].length)
+    return array[val][pos]
+  } else {
+    return array[val];
+  }
 }
 
 function distance(x1, y1, x2, y2) {
