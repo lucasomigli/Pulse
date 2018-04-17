@@ -65,7 +65,6 @@ var notesArray = [
 
 function init() {
   getWindowSize()
-
   //create balls
   touchRadius = Math.round(windowSize / touchRadiusRate);
   ballsArray = []
