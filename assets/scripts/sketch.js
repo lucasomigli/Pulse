@@ -13,12 +13,23 @@ var mouseHeld
 
 var bgColorArray = []
 var backgroundColor
+var backgroundTarget
+var backColor1
+var backColor2
 
 var ballsArray = []
 var arcArray = []
 var heldArcs = []
 var mouseFollow = []
 var shapesArray = []
+
+var backgroundPalette = [
+  [129, 225, 244],
+  [37, 86, 86],
+  [237, 174, 73],
+  [0, 95, 140],
+  [241, 48, 48]
+]
 
 var colorPalette = [
   [[1, 22, 39],
@@ -68,7 +79,7 @@ function init() {
   //create balls
   touchRadius = Math.round(windowSize / touchRadiusRate);
   ballsArray = []
-  let ballsNumber = Math.round(windowSize/ballsRate)
+  let ballsNumber = Math.round(windowSize/ballsRate)* 2
   for (let i = 0; i < ballsNumber; i++) {
     var x = Math.random() * (windowWidth - radius * 2) + radius
     var y = Math.random() * (windowHeight - radius * 2) + radius
@@ -87,8 +98,11 @@ function init() {
 
 function setup() {
   createCanvas(windowWidth, windowHeight)
-  colorMode(RGB);
+  colorMode(HSB);
   colorArray = colorPalette[getRandomInt(0, colorPalette.length)]
+  backgroundTarget = getRandomColor(backgroundPalette, false)
+  backColor1 = getRandomColor(backgroundPalette, false)
+  backColor2 = getRandomColor(backgroundPalette, false)
   init()
 
   backgroundColor = new Color(getRandomInt(0, 255), getRandomInt(0, 255), getRandomInt(0, 255))
@@ -101,7 +115,7 @@ function setup() {
 }
 
 function draw() {
-  updateBackground(getRandomInt(90, 100), getRandomInt(180, 240), .1)
+  updateBackground()
   background(backgroundColor.rgb)
 
   ballsArray.forEach((ball) => {
@@ -110,8 +124,6 @@ function draw() {
 
   shapesArray.forEach((shape) => {
     shape.update()
-    // need to have a function that lerps the color of the shapes until fading 
-    // for the duration of a barlength. 
   })
 
   if (arcArray !== undefined) {
@@ -141,7 +153,6 @@ function mouseClicked() {
     new Circle(x, y, radius, col.rgb, time),
     new Pentagon(x, y, radius, 5, col.rgb, time)
   ]
-  
   let randomShape = shapes[getRandomInt(0, shapes.length)]
   shapesArray.splice(timeTrack, 1, randomShape)
   shapesArray[timeTrack].setOriginalColor(col.rgb)
@@ -170,7 +181,6 @@ function mouseDragged() {
     // vol.volume.value++
     synth1.hold = true
   }
-
 }
 
 // Other Functions
@@ -232,26 +242,19 @@ function changeDirectionOnMouseClick(xPos, yPos) {
 var previousCol = []
 var speedvals = []
 
-function updateBackground(minCol, maxCol, speed) {
+var diff = []
+let iter = 0
+
+function updateBackground () {
   for (let i = 0; i < 3; i++) {
-    if (!speedvals[i]) {
-      speedvals[i] = Math.random() * speed + .01
-    }
-    if (previousCol[i] === undefined) {
-      previousCol.push(backgroundColor.rgb[i] - speedvals[i])
-    }
-    if (previousCol[i] < backgroundColor.rgb[i] && backgroundColor.rgb[i] <= maxCol) {
-      previousCol[i] = backgroundColor.rgb[i]
-      backgroundColor.rgb[i] += speedvals[i]
-    } else if (backgroundColor.rgb[i] > maxCol || previousCol[i] > backgroundColor.rgb[i]) {
-      if (backgroundColor.rgb[i] < minCol) {
-        previousCol[i] = backgroundColor.rgb[i]
-        backgroundColor.rgb[i] += speedvals[i]
-      } else {
-        previousCol[i] = backgroundColor.rgb[i]
-        backgroundColor.rgb[i] -= speedvals[i]
-      }
-    }
+    diff[i] = Math.sign(backgroundTarget[i] - backgroundColor.rgb[i])
+    backgroundColor.rgb[i] += diff[i]
+  }
+  if (diff[0] === 0 && diff[1] === 0 && diff[2] === 0) {
+    setTimeout(() => {
+      backgroundTarget = backgroundPalette[iter % backgroundPalette.length]
+    }, 4000);
+    iter++
   }
 }
 
@@ -276,13 +279,13 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * Math.floor(max)) + min;
 }
 
-function getRandomColor(array, pos) {
+function getRandomColor(array, pos, unwantedValue) {
   let val = getRandomInt(0, array.length)
   if (pos) {
     pos = getRandomInt(0, array[val].length)
     return array[val][pos]
   } else {
-    return array[val];
+      return array[val]
   }
 }
 
